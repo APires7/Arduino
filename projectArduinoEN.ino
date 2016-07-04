@@ -24,7 +24,7 @@ void setup() {
   lcd.begin(20, 4);
   dht.begin();
   
-  //segundos, minutos, hora, diadasemana
+  //seconds, minutes, hours, dayoftheweek
   RTC.setDS1302Time(30, 33, 13, 4, 29, 06, 2016);
 
   Serial.println("UENP-Agronomia/Ciencia da Computacao");
@@ -134,7 +134,7 @@ void updateHT(){
   lcd.setCursor(0,3);
   lcd.print("Humidity: ");
   lcd.print(h);
-  lcd.print(" %   ");
+  lcd.print(" %");
   delay(2000);
   
   lcd.setCursor(0,3);
@@ -189,7 +189,7 @@ void updateHygrometer(){
     Serial.println("...Optimal Level...");
     lcd.setCursor(0, 3);
     lcd.print("...Optimal Level....");
-    digitalWrite(solenoid, LOW); //Desliga a válvula solenóide
+    digitalWrite(solenoid, LOW); //Turn off solenoid
   }
   else if (porcHyg1 >= 28 && porcHyg1 < 37) {
     Serial.println("...Middle Level...");
@@ -198,7 +198,7 @@ void updateHygrometer(){
     Serial.println("...Irrigating...");
     lcd.setCursor(0, 3);
     lcd.print("...Irrigating...    ");
-    digitalWrite(solenoid, HIGH); //Liga a válvula solenóide
+    digitalWrite(solenoid, HIGH); //Turn on solenoid
   }
   
   myFile = SD.open("projectArduino.txt", FILE_WRITE);
