@@ -63,7 +63,6 @@ void loop() {
   updateHT();
   updateHygrometer();
   Serial.println("---------------");
-
 }
 
 void updateTimeLCD(){
@@ -110,6 +109,9 @@ void updateTimeLCD(){
    lcd.print(RTC.seconds);
    lcd.print(":");
    delay(2000);
+   
+   saveDate(RTC.dayofmonth, RTC.month, RTC.year, RTC.hours, RTC.minutes, RTC.seconds);
+   delay(5000);
 }
 
 void updateHT(){
@@ -118,23 +120,35 @@ void updateHT(){
   
    if(isnan(h) || isnan(t)){
       Serial.println("DHT 22 error");
-     return;
+      lcd.print("DHT 22 error");
+      return;
    }
+     
   Serial.print("Humidity: ");
   Serial.print(h);
   Serial.println(" %");
   Serial.print("Temperature: ");
   Serial.print(t);
   Serial.println(" C");
+  
   lcd.setCursor(0,3);
   lcd.print("Humidity: ");
   lcd.print(h);
   lcd.print(" %   ");
   delay(2000);
+  
   lcd.setCursor(0,3);
   lcd.print("Temperature: ");
   lcd.print(t);
   lcd.print(" C");
+  delay(2000);
+ 
+  myFile = SD.open("projectArduino.txt", FILE_WRITE);
+  save("Humidity: ", h, " %");
+  delay(2000);
+ 
+  myFile = SD.open("projectArduino.txt", FILE_WRITE);
+  save("Temperature: ", t, " C");
   delay(2000); 
 }
 
@@ -185,5 +199,60 @@ void updateHygrometer(){
     lcd.setCursor(0, 3);
     lcd.print("...Irrigating...    ");
     digitalWrite(solenoid, HIGH); //Liga a válvula solenóide
+  }
+  
+  myFile = SD.open("projectArduino.txt", FILE_WRITE);
+  save("Hygrometer 1: ", porcHyg1, " %");
+  delay(2000);
+  
+  myFile = SD.open("projectArduino.txt", FILE_WRITE);
+  save("Hygrometer 2: ", porcHyg2, " %");
+  delay(2000);
+  
+  myFile = SD.open("projectArduino.txt", FILE_WRITE);
+  save("Hygrometer 3: ", porcHyg3, " %");
+  delay(2000);
+}
+
+void save(String text, float data, String text2){
+  if(myFile){
+    Serial.print("Saving data...");
+    myFile.print(text);
+    myFile.print(data);
+    myFile.print(text2);
+    myFile.flush();
+    myFile.close();
+    Serial.println("Saved");
+  }
+  else{
+    Serial.println("Error");
+  }
+}
+
+void saveDate(int day, int month, int year, int hours, int minutes, int seconds){
+  myFile = SD.open("testFile.txt", FILE_WRITE);
+  if(!SD.open("projectArduino.txt")){
+    Serial.println("ERROR projectArduino.txt");
+  }
+  if(myFile){
+    Serial.print("Saving date...");
+    myFile.println("----------");
+    myFile.print("Date: ");
+    myFile.print(day);
+    myFile.print("/");
+    myFile.print(month);
+    myFile.print("/");
+    myFile.println(year);
+    myFile.print("Hours: ");
+    myFile.print(hours);
+    myFile.print(":");
+    myFile.print(minutes);
+    myFile.print(":");
+    myFile.println(seconds);
+    myFile.flush();
+    myFile.close();
+    Serial.println("Saved.");
+  } else {
+    Serial.println("Error to open the projectArduino.txt");
   }
 }
